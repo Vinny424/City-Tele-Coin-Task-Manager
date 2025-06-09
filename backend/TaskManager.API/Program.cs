@@ -41,9 +41,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -54,6 +55,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseCors("AllowFrontend");
@@ -62,11 +64,42 @@ app.UseMiddleware<JwtMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 
-// Auto migrate database
-using (var scope = app.Services.CreateScope())
+// Database initialization with proper error handling
+try
 {
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated();
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        
+        // Delete and recreate database (for development)
+        await context.Database.EnsureDeletedAsync();
+        await context.Database.EnsureCreatedAsync();
+        
+        logger.LogInformation("Database created successfully");
+        
+        // Verify tables exist
+        var connection = context.Database.GetDbConnection();
+        await connection.OpenAsync();
+        
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'";
+        using var reader = await command.ExecuteReaderAsync();
+        
+        var tables = new List<string>();
+        while (await reader.ReadAsync())
+        {
+            tables.Add(reader.GetString(0));
+        }
+        
+        logger.LogInformation($"Tables created: {string.Join(", ", tables)}");
+    }
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred while creating the database");
+    throw; // Re-throw to prevent app from starting with broken database
 }
 
 app.Run();
