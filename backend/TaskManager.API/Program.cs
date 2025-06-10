@@ -8,20 +8,21 @@ using TaskManager.API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services
+// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Database
+// Configure the database connection.
+// It uses the connection string from appsettings.json or environment variables.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Services
+// Register custom services for dependency injection.
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
 
-// JWT Authentication
+// Configure JWT Authentication.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -29,18 +30,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Secret"]!)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ClockSkew = TimeSpan.Zero
+            ValidateIssuer = false, // Not validating the issuer
+            ValidateAudience = false, // Not validating the audience
+            ClockSkew = TimeSpan.Zero // No tolerance for token expiration
         };
     });
 
-// CORS
+// Configure Cross-Origin Resource Sharing (CORS) to allow the frontend to communicate with the backend.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
         policy =>
         {
+            // Allow requests from the frontend development server.
             policy.WithOrigins("http://localhost:3000", "http://localhost:3001")
                   .AllowAnyHeader()
                   .AllowAnyMethod()
@@ -50,56 +52,67 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure pipeline
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    // Enable Swagger for API documentation in development.
     app.UseSwagger();
     app.UseSwaggerUI();
+    // Use a more detailed exception page in development.
     app.UseDeveloperExceptionPage();
 }
 
+// Apply the CORS policy.
 app.UseCors("AllowFrontend");
+
+// Enable authentication and authorization.
 app.UseAuthentication();
-app.UseMiddleware<JwtMiddleware>();
+app.UseMiddleware<JwtMiddleware>(); // Custom middleware to handle JWT user extraction
 app.UseAuthorization();
+
+// Map controller routes.
 app.MapControllers();
 
-// Database initialization with proper error handling
-try
+// Initialize the database.
+// This function handles database creation and migrations.
+InitializeDatabase(app);
+
+// Run the application.
+app.Run();
+
+
+// --- Helper Function for Database Initialization ---
+
+void InitializeDatabase(IApplicationBuilder app)
 {
-    using (var scope = app.Services.CreateScope())
+    // Create a new scope to resolve services
+    using (var scope = app.ApplicationServices.CreateScope())
     {
-        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        
-        // Delete and recreate database (for development)
-        await context.Database.EnsureDeletedAsync();
-        await context.Database.EnsureCreatedAsync();
-        
-        logger.LogInformation("Database created successfully");
-        
-        // Verify tables exist
-        var connection = context.Database.GetDbConnection();
-        await connection.OpenAsync();
-        
-        using var command = connection.CreateCommand();
-        command.CommandText = "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'";
-        using var reader = await command.ExecuteReaderAsync();
-        
-        var tables = new List<string>();
-        while (await reader.ReadAsync())
+        var services = scope.ServiceProvider;
+        try
         {
-            tables.Add(reader.GetString(0));
+            var context = services.GetRequiredService<AppDbContext>();
+            var logger = services.GetRequiredService<ILogger<Program>>();
+
+            // In a production environment, you would typically use migrations.
+            // For this project, we ensure the database is created.
+            
+            // This will create the database and schema if they don't exist.
+            // It will NOT delete the database if it already exists, thus preserving data.
+            if (context.Database.EnsureCreated())
+            {
+                logger.LogInformation("Database created successfully.");
+            }
+            else
+            {
+                logger.LogInformation("Database already exists. No action taken.");
+            }
         }
-        
-        logger.LogInformation($"Tables created: {string.Join(", ", tables)}");
+        catch (Exception ex)
+        {
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred while initializing the database.");
+            throw; // Re-throw to fail fast if the database can't be set up.
+        }
     }
 }
-catch (Exception ex)
-{
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogError(ex, "An error occurred while creating the database");
-    throw; // Re-throw to prevent app from starting with broken database
-}
-
-app.Run();

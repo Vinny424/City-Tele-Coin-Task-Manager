@@ -15,6 +15,11 @@ services:
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - taskmanager-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d taskmanager"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: 
@@ -22,9 +27,11 @@ services:
       dockerfile: Dockerfile
     container_name: taskmanager-api
     ports:
-      - "5001:5000"  # Changed: External port 5001, internal still 5000
+      - "5001:5001"
+    # This is modified to wait for the postgres service to be 'healthy'.
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=taskmanager;Username=admin;Password=password

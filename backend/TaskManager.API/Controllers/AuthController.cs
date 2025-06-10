@@ -9,38 +9,74 @@ namespace TaskManager.API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
             _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("signup")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                _logger.LogInformation($"Registration attempt for email: {registerDto.Email}");
+                
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning($"Invalid model state for registration: {registerDto.Email}");
+                    return BadRequest(ModelState);
+                }
 
-            var token = await _authService.RegisterAsync(registerDto);
-            
-            if (token == null)
-                return BadRequest(new { message = "Email already exists" });
+                var token = await _authService.RegisterAsync(registerDto);
+                
+                if (token == null)
+                {
+                    _logger.LogWarning($"Registration failed - email already exists: {registerDto.Email}");
+                    return BadRequest(new { message = "Email already exists" });
+                }
 
-            return Ok(new { token });
+                _logger.LogInformation($"Registration successful for email: {registerDto.Email}");
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Registration error for email: {registerDto.Email}");
+                return StatusCode(500, new { message = "An error occurred during registration" });
+            }
         }
 
         [HttpPost("signin")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            try
+            {
+                _logger.LogInformation($"Login attempt for email: {loginDto.Email}");
+                
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning($"Invalid model state for login: {loginDto.Email}");
+                    return BadRequest(ModelState);
+                }
 
-            var token = await _authService.LoginAsync(loginDto);
-            
-            if (token == null)
-                return Unauthorized(new { message = "Invalid credentials" });
+                var token = await _authService.LoginAsync(loginDto);
+                
+                if (token == null)
+                {
+                    _logger.LogWarning($"Login failed - invalid credentials: {loginDto.Email}");
+                    return Unauthorized(new { message = "Invalid credentials" });
+                }
 
-            return Ok(new { token });
+                _logger.LogInformation($"Login successful for email: {loginDto.Email}");
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Login error for email: {loginDto.Email}");
+                return StatusCode(500, new { message = "An error occurred during login" });
+            }
         }
 
         [HttpPost("signout")]
