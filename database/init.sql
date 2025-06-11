@@ -31,7 +31,7 @@ BEGIN
     NEW.updated_at = CURRENT_TIMESTAMP;
     RETURN NEW;
 END;
-$ language 'plpgsql';
+$$ language 'plpgsql';
 
 -- Trigger to automatically update updated_at
 CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks
