@@ -3,9 +3,9 @@ services:
     image: postgres:15-alpine
     container_name: taskmanager-db
     environment:
-      POSTGRES_DB: taskmanager
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -31,9 +31,9 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres;Database=taskmanager;Username=admin;Password=password
-      - Jwt__Secret=your-super-secret-jwt-key-that-is-at-least-32-characters-long
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__DefaultConnection=${CONNECTION_STRING}
+      - Jwt__Secret=${JWT_SECRET}
     networks:
       - taskmanager-network
     restart: unless-stopped

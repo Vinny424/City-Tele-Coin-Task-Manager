@@ -2,6 +2,38 @@
 
 A full-stack web application for managing personal tasks with user authentication, built as part of the City Tele Coin coding challenge.
 
+## ⚙️ Environment Configuration
+
+This application uses a centralized `.env` file in the root directory for all environment variables. Before running the application, you must create this file:
+
+### Creating the .env File
+Copy the provided `.env` file or create one with the following variables:
+```bash
+# Database Configuration
+POSTGRES_DB=taskmanager
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=password
+
+# Database Connection String
+CONNECTION_STRING=Host=postgres;Database=taskmanager;Username=admin;Password=password
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-that-is-at-least-32-characters-long
+
+# ASP.NET Core Configuration
+ASPNETCORE_ENVIRONMENT=Development
+ASPNETCORE_URLS=http://+:5001
+
+# Additional Configuration
+ALLOWED_HOSTS=*
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+LOG_LEVEL_DEFAULT=Information
+LOG_LEVEL_ASPNETCORE=Warning
+LOG_LEVEL_ENTITYFRAMEWORK=Warning
+```
+
+**Important**: The `.env` file contains sensitive information and should never be committed to version control. Ensure it's listed in your `.gitignore` file.
+
 ## 🚀 Tech Stack
 
 - **Backend**: ASP.NET Core 8.0 (C#)
@@ -57,7 +89,10 @@ git clone https://github.com/your-username/personal-task-manager.git
 cd personal-task-manager
 ```
 
-### 2. Start the Application
+### 2. Configure Environment Variables
+Ensure the `.env` file exists in the root directory with all required variables (see Environment Configuration section above).
+
+### 3. Start the Application
 ```bash
 docker-compose up --build
 ```
@@ -67,7 +102,7 @@ This command will:
 - Build and start the ASP.NET Core backend API
 - Build and start the React frontend application
 
-### 3. Access the Application
+### 4. Access the Application
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
 - **Backend API**: [http://localhost:5001](http://localhost:5001)
 - **API Documentation**: [http://localhost:5001/swagger](http://localhost:5001/swagger) (Development only)
@@ -121,20 +156,22 @@ tasks (
 
 ### Environment Variables
 
-The application uses the following environment variables (configured in docker-compose.yml):
+All environment variables are centralized in the root `.env` file and automatically loaded by Docker Compose. The application configuration has been updated to use environment variables instead of hardcoded values in configuration files.
 
-**Backend:**
-- `ConnectionStrings__DefaultConnection` - PostgreSQL connection string
-- `Jwt__Secret` - JWT signing secret (minimum 32 characters)
-- `ASPNETCORE_ENVIRONMENT` - Application environment
+**Key Configuration Changes:**
+- All sensitive values moved from `appsettings.json` to environment variables
+- Docker Compose updated to reference `.env` file variables
+- Backend configuration updated to prioritize environment variables over config files
 
-**Database:**
-- `POSTGRES_DB` - Database name
-- `POSTGRES_USER` - Database username
-- `POSTGRES_PASSWORD` - Database password
+**Production Deployment:**
+For production deployment, update the `.env` file with production-appropriate values:
+- Use strong, unique passwords and secrets
+- Configure proper database connection strings
+- Set `ASPNETCORE_ENVIRONMENT=Production`
+- Update CORS origins to match your production domains
 
 ### JWT Configuration
-The application uses a secure JWT secret for token signing. In production, ensure you use a strong, unique secret key.
+The JWT secret is now configured via the `JWT_SECRET` environment variable. Ensure this is a strong, unique key of at least 32 characters for production use.
 
 ## 🐳 Docker Services
 
