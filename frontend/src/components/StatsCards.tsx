@@ -15,10 +15,10 @@ const StatsCards: React.FC<StatsCardsProps> = ({ totalTasks, pendingTasks, compl
       marginBottom: '32px'
     }}>
       <div style={{
-        background: '#F8F9FE',
+        background: 'rgba(75, 123, 229, 0.05)',
         padding: '24px',
         borderRadius: '16px',
-        border: '1px solid #E8EAED',
+        border: '1px solid rgba(75, 123, 229, 0.15)',
         textAlign: 'center'
       }}>
         <div style={{
@@ -40,16 +40,16 @@ const StatsCards: React.FC<StatsCardsProps> = ({ totalTasks, pendingTasks, compl
       </div>
 
       <div style={{
-        background: '#FFF8F0',
+        background: 'rgba(210, 133, 98, 0.05)',
         padding: '24px',
         borderRadius: '16px',
-        border: '1px solid #FFE4B5',
+        border: '1px solid rgba(210, 133, 98, 0.15)',
         textAlign: 'center'
       }}>
         <div style={{
           fontSize: '32px',
           fontWeight: '700',
-          color: '#FF8C00',
+          color: '#d28562',
           marginBottom: '8px'
         }}>
           {pendingTasks}
@@ -65,16 +65,16 @@ const StatsCards: React.FC<StatsCardsProps> = ({ totalTasks, pendingTasks, compl
       </div>
 
       <div style={{
-        background: '#F0FDF4',
+        background: 'rgba(133, 210, 98, 0.05)',
         padding: '24px',
         borderRadius: '16px',
-        border: '1px solid #BBF7D0',
+        border: '1px solid rgba(133, 210, 98, 0.15)',
         textAlign: 'center'
       }}>
         <div style={{
           fontSize: '32px',
           fontWeight: '700',
-          color: '#22C55E',
+          color: '#85d262',
           marginBottom: '8px'
         }}>
           {completedTasks}
