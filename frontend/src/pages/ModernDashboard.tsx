@@ -184,7 +184,7 @@ const ModernDashboard: React.FC = () => {
               margin: '0 0 8px 0',
               letterSpacing: '0.5px'
             }}>
-              Welcome to Taskiee
+              Welcome to Task Nexus
             </h1>
             <p style={{
               color: 'rgba(255, 255, 255, 0.9)',
