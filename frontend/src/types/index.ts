@@ -9,9 +9,9 @@ export interface User {
     description?: string;
     category: string;
     completed: boolean;
-    dueDate?: string;
-    createdAt: string;
-    updatedAt: string;
+    dueDate?: string; // ISO string format from API (DateTime serialized)
+    createdAt: string; // ISO string format from API (DateTime serialized)
+    updatedAt: string; // ISO string format from API (DateTime serialized)
   }
   
   export interface CreateTaskDto {
@@ -19,7 +19,7 @@ export interface User {
     description?: string;
     category: string;
     completed: boolean;
-    dueDate?: string;
+    dueDate?: string; // ISO string format for API (will be deserialized to DateTime)
   }
   
   export interface LoginDto {
