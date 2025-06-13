@@ -3,7 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import ModernDashboard from './pages/ModernDashboard';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
               path="/" 
               element={
                 <ProtectedRoute>
-                  <ModernDashboard />
+                  <Dashboard />
                 </ProtectedRoute>
               } 
             />

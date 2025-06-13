@@ -9,80 +9,156 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleComplete }) => {
-  const categoryColors = {
-    Work: 'bg-blue-100 text-blue-800',
-    Personal: 'bg-green-100 text-green-800',
-    Other: 'bg-gray-100 text-gray-800',
+  const getCategoryColor = (category: string): string => {
+    switch (category) {
+      case 'Work': return '#DBEAFE';
+      case 'Personal': return '#D1FAE5';
+      case 'Other': return '#F3F4F6';
+      default: return '#F3F4F6';
+    }
+  };
+
+  const getCategoryTextColor = (category: string): string => {
+    switch (category) {
+      case 'Work': return '#1E40AF';
+      case 'Personal': return '#065F46';
+      case 'Other': return '#374151';
+      default: return '#374151';
+    }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center space-x-2 mb-2">
-            <h3 className={`text-lg font-medium ${task.completed ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-              {task.title}
-            </h3>
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                categoryColors[task.category as keyof typeof categoryColors] || categoryColors.Other
-              }`}
-            >
-              {task.category}
-            </span>
-          </div>
-          {task.description && (
-            <p className={`text-sm ${task.completed ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
-              {task.description}
-            </p>
+    <div
+      style={{
+        background: 'white',
+        borderRadius: '12px',
+        padding: '20px',
+        border: '1px solid #E5E7EB',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        transition: 'all 0.2s ease',
+        position: 'relative'
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+        e.currentTarget.style.transform = 'translateY(-2px)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+        e.currentTarget.style.transform = 'translateY(0)';
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: '12px'
+      }}>
+        <h3 style={{
+          fontSize: '16px',
+          fontWeight: '600',
+          margin: 0,
+          color: task.completed ? '#9CA3AF' : '#363942',
+          textDecoration: task.completed ? 'line-through' : 'none',
+          lineHeight: '1.5'
+        }}>
+          {task.title}
+        </h3>
+        <span style={{
+          background: getCategoryColor(task.category),
+          color: getCategoryTextColor(task.category),
+          padding: '4px 8px',
+          borderRadius: '6px',
+          fontSize: '12px',
+          fontWeight: '500',
+          whiteSpace: 'nowrap'
+        }}>
+          {task.category}
+        </span>
+      </div>
+
+      {task.description && (
+        <p style={{
+          fontSize: '14px',
+          color: task.completed ? '#D1D5DB' : '#6B7280',
+          margin: '0 0 16px 0',
+          lineHeight: '1.5'
+        }}>
+          {task.description}
+        </p>
+      )}
+
+      {task.dueDate && (
+        <div style={{
+          fontSize: '12px',
+          color: new Date(task.dueDate) < new Date() && !task.completed ? '#DC2626' : '#6B7280',
+          marginBottom: '16px',
+          fontWeight: '500'
+        }}>
+          Due: {new Date(task.dueDate).toLocaleDateString()} at {new Date(task.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          {new Date(task.dueDate) < new Date() && !task.completed && (
+            <span style={{ color: '#DC2626', marginLeft: '8px' }}>(Overdue)</span>
           )}
-          {task.dueDate && (
-            <div className="mb-3">
-              <span className={`text-sm ${
-                new Date(task.dueDate) < new Date() && !task.completed
-                  ? 'text-red-600 font-medium'
-                  : task.completed
-                  ? 'text-gray-400'
-                  : 'text-gray-600'
-              }`}>
-                Due: {new Date(task.dueDate).toLocaleDateString()} at {new Date(task.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                {new Date(task.dueDate) < new Date() && !task.completed && (
-                  <span className="ml-2 text-red-600 font-medium">(Overdue)</span>
-                )}
-              </span>
-            </div>
-          )}
-          <div className="flex items-center space-x-4">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={task.completed}
-                onChange={(e) => onToggleComplete(task.id, e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <span className="ml-2 text-sm text-gray-600">
-                {task.completed ? 'Completed' : 'Mark as complete'}
-              </span>
-            </label>
-          </div>
         </div>
-        <div className="flex space-x-2 ml-4">
+      )}
+
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}>
+        <label style={{
+          display: 'flex',
+          alignItems: 'center',
+          cursor: 'pointer',
+          fontSize: '14px',
+          color: '#6B7280'
+        }}>
+          <input
+            type="checkbox"
+            checked={task.completed}
+            onChange={(e) => onToggleComplete(task.id, e.target.checked)}
+            style={{
+              marginRight: '8px',
+              transform: 'scale(1.2)'
+            }}
+          />
+          {task.completed ? 'Completed' : 'Mark complete'}
+        </label>
+
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={() => onEdit(task)}
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#4B7BE5',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontFamily: 'Poppins, sans-serif'
+            }}
           >
             Edit
           </button>
           <button
             onClick={() => onDelete(task.id)}
-            className="text-red-600 hover:text-red-800 text-sm font-medium"
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#DC2626',
+              fontSize: '12px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              padding: '4px 8px',
+              borderRadius: '4px',
+              fontFamily: 'Poppins, sans-serif'
+            }}
           >
             Delete
           </button>
         </div>
-      </div>
-      <div className="mt-4 text-xs text-gray-500">
-        Created: {new Date(task.createdAt).toLocaleDateString()}
       </div>
     </div>
   );
