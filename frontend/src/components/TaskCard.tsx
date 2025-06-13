@@ -30,10 +30,14 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleCom
   return (
     <div
       style={{
-        background: 'white',
+        background: task.completed 
+          ? 'rgba(34, 197, 94, 0.05)' // Green translucent for completed tasks
+          : 'rgba(245, 158, 11, 0.05)', // Amber/orange translucent for incomplete tasks
         borderRadius: '12px',
         padding: '20px',
-        border: '1px solid #E5E7EB',
+        border: task.completed 
+          ? '1px solid rgba(34, 197, 94, 0.15)'
+          : '1px solid rgba(245, 158, 11, 0.15)',
         boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
         transition: 'all 0.2s ease',
         position: 'relative'
