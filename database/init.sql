@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS tasks (
     description TEXT,
     category VARCHAR(50) DEFAULT 'Other',
     completed BOOLEAN DEFAULT FALSE,
+    due_date TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

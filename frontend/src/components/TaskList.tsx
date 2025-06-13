@@ -76,6 +76,7 @@ const TaskList: React.FC = () => {
           description: task.description,
           category: task.category,
           completed,
+          dueDate: task.dueDate,
         });
         fetchTasks(filterCategory);
       }

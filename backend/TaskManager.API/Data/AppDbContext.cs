@@ -43,6 +43,7 @@ namespace TaskManager.API.Data
                 entity.Property(e => e.Description).HasColumnName("description");
                 entity.Property(e => e.Category).HasColumnName("category");
                 entity.Property(e => e.Completed).HasColumnName("completed");
+                entity.Property(e => e.DueDate).HasColumnName("due_date");
                 entity.Property(e => e.CreatedAt).HasColumnName("created_at");
                 entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
                 

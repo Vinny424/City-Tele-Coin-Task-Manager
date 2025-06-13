@@ -9,6 +9,7 @@ export interface User {
     description?: string;
     category: string;
     completed: boolean;
+    dueDate?: string;
     createdAt: string;
     updatedAt: string;
   }
@@ -18,6 +19,7 @@ export interface User {
     description?: string;
     category: string;
     completed: boolean;
+    dueDate?: string;
   }
   
   export interface LoginDto {

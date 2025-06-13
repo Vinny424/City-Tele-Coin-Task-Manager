@@ -14,5 +14,7 @@ namespace TaskManager.API.DTOs
         public string Category { get; set; } = "Other";
         
         public bool Completed { get; set; } = false;
+        
+        public DateTime? DueDate { get; set; }
     }
 }

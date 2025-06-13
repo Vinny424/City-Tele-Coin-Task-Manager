@@ -30,6 +30,7 @@ namespace TaskManager.API.Services
                 Description = t.Description,
                 Category = t.Category,
                 Completed = t.Completed,
+                DueDate = t.DueDate,
                 CreatedAt = t.CreatedAt,
                 UpdatedAt = t.UpdatedAt
             });
@@ -48,6 +49,7 @@ namespace TaskManager.API.Services
                 Description = task.Description,
                 Category = task.Category,
                 Completed = task.Completed,
+                DueDate = task.DueDate,
                 CreatedAt = task.CreatedAt,
                 UpdatedAt = task.UpdatedAt
             };
@@ -61,7 +63,8 @@ namespace TaskManager.API.Services
                 Title = createTaskDto.Title,
                 Description = createTaskDto.Description,
                 Category = createTaskDto.Category,
-                Completed = createTaskDto.Completed
+                Completed = createTaskDto.Completed,
+                DueDate = createTaskDto.DueDate
             };
 
             _context.Tasks.Add(task);
@@ -74,6 +77,7 @@ namespace TaskManager.API.Services
                 Description = task.Description,
                 Category = task.Category,
                 Completed = task.Completed,
+                DueDate = task.DueDate,
                 CreatedAt = task.CreatedAt,
                 UpdatedAt = task.UpdatedAt
             };
@@ -89,6 +93,7 @@ namespace TaskManager.API.Services
             task.Description = updateTaskDto.Description;
             task.Category = updateTaskDto.Category;
             task.Completed = updateTaskDto.Completed;
+            task.DueDate = updateTaskDto.DueDate;
             task.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -100,6 +105,7 @@ namespace TaskManager.API.Services
                 Description = task.Description,
                 Category = task.Category,
                 Completed = task.Completed,
+                DueDate = task.DueDate,
                 CreatedAt = task.CreatedAt,
                 UpdatedAt = task.UpdatedAt
             };

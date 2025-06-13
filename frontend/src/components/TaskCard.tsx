@@ -36,6 +36,22 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleCom
               {task.description}
             </p>
           )}
+          {task.dueDate && (
+            <div className="mb-3">
+              <span className={`text-sm ${
+                new Date(task.dueDate) < new Date() && !task.completed
+                  ? 'text-red-600 font-medium'
+                  : task.completed
+                  ? 'text-gray-400'
+                  : 'text-gray-600'
+              }`}>
+                Due: {new Date(task.dueDate).toLocaleDateString()} at {new Date(task.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                {new Date(task.dueDate) < new Date() && !task.completed && (
+                  <span className="ml-2 text-red-600 font-medium">(Overdue)</span>
+                )}
+              </span>
+            </div>
+          )}
           <div className="flex items-center space-x-4">
             <label className="flex items-center">
               <input

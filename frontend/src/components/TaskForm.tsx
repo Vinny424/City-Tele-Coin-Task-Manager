@@ -13,6 +13,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
     description: '',
     category: 'Other',
     completed: false,
+    dueDate: undefined,
   });
 
   useEffect(() => {
@@ -22,6 +23,7 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
         description: task.description || '',
         category: task.category,
         completed: task.completed,
+        dueDate: task.dueDate ? new Date(task.dueDate).toISOString().slice(0, 16) : '',
       });
     }
   }, [task]);
@@ -35,9 +37,17 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    let processedValue: any = value;
+    
+    if (type === 'checkbox') {
+      processedValue = (e.target as HTMLInputElement).checked;
+    } else if (name === 'dueDate') {
+      processedValue = value ? new Date(value).toISOString() : undefined;
+    }
+    
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+      [name]: processedValue,
     }));
   };
 
@@ -93,6 +103,20 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onSubmit, onCancel }) => {
                 <option value="Personal">Personal</option>
                 <option value="Other">Other</option>
               </select>
+            </div>
+
+            <div>
+              <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700">
+                Due Date
+              </label>
+              <input
+                type="datetime-local"
+                id="dueDate"
+                name="dueDate"
+                value={formData.dueDate ? new Date(formData.dueDate).toISOString().slice(0, 16) : ''}
+                onChange={handleChange}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
 
             <div className="flex items-center">
