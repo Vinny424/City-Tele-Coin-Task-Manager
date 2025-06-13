@@ -4,7 +4,9 @@
       "Bash(rm:*)",
       "Bash(mv:*)",
       "Bash(docker-compose logs:*)",
-      "Bash(docker exec:*)"
+      "Bash(docker exec:*)",
+      "Bash(docker-compose build:*)",
+      "Bash(docker-compose up:*)"
     ],
     "deny": []
   }

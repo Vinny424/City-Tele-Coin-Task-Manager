@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { Task, CreateTaskDto } from '../types';
 import { taskService } from '../services/tasks';
 import { useAuth } from '../context/AuthContext';
@@ -165,7 +166,8 @@ const Dashboard: React.FC = () => {
       fontFamily: 'Poppins, sans-serif',
       backgroundColor: '#fff',
       minHeight: '100vh',
-      color: '#363942'
+      color: '#363942',
+      paddingBottom: '100px'
     }}>
       <Header onLogout={logout} />
 
@@ -269,7 +271,19 @@ const Dashboard: React.FC = () => {
             padding: '64px 20px',
             color: '#9CA3AF'
           }}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'center', 
+              marginBottom: '16px' 
+            }}>
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <polyline points="14,2 14,8 20,8" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <line x1="16" y1="13" x2="8" y2="13" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
+                <line x1="16" y1="17" x2="8" y2="17" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round"/>
+                <polyline points="10,9 9,9 8,9" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
             <h3 style={{
               fontSize: '20px',
               fontWeight: '600',
@@ -314,6 +328,80 @@ const Dashboard: React.FC = () => {
         onInputChange={handleInputChange}
         onClose={handleCloseForm}
       />
+
+      {/* Bottom Navigation */}
+      <div style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: '#F8F6FF',
+        borderTop: '1px solid #E5E7EB',
+        padding: '16px',
+        display: 'flex',
+        justifyContent: 'space-around',
+        alignItems: 'center'
+      }}>
+        <Link
+          to="/"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textDecoration: 'none',
+            color: '#4B7BE5',
+            fontSize: '10px',
+            fontWeight: '500'
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginBottom: '4px' }}>
+            <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" stroke="#4B7BE5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M9 22V12H15V22" stroke="#4B7BE5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Dashboard
+        </Link>
+        
+        <Link
+          to="/schedule"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textDecoration: 'none',
+            color: '#6B7280',
+            fontSize: '10px',
+            fontWeight: '500'
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginBottom: '4px' }}>
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke="#6B7280" strokeWidth="2"/>
+            <line x1="16" y1="2" x2="16" y2="6" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="8" y1="2" x2="8" y2="6" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="3" y1="10" x2="21" y2="10" stroke="#6B7280" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+          Schedule
+        </Link>
+        
+        <Link
+          to="/about"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textDecoration: 'none',
+            color: '#6B7280',
+            fontSize: '10px',
+            fontWeight: '500'
+          }}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style={{ marginBottom: '4px' }}>
+            <circle cx="12" cy="12" r="10" stroke="#6B7280" strokeWidth="2"/>
+            <path d="M12 16V12" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 8H12.01" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          About
+        </Link>
+      </div>
 
       {/* Add CSS for spinner animation */}
       <style>
