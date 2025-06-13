@@ -10,22 +10,27 @@ interface AuthBrandingProps {
 ////
 const AuthBranding: React.FC<AuthBrandingProps> = ({ logoSrc, title, subtitle }) => {
   return (
-    <div>
+    <div className="text-center">
       {logoSrc && (
-        <img
-          className="mx-auto h-24 w-auto" // A larger logo for better visual impact
-          src={logoSrc}
-          alt="Application Logo"
-          // Basic error handling in case the logo fails to load
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
-        />
+        <div className="flex justify-center mb-6">
+          <img
+            className="w-auto max-w-full object-contain transition-all duration-300"
+            src={logoSrc}
+            alt="Application Logo"
+            style={{
+              height: 'clamp(120px, 15vw, 150px)', // Responsive between 120px and 150px
+              maxHeight: '25vh', // Never exceed 25% of viewport height
+            }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        </div>
       )}
-      <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
         {title}
       </h2>
-      <p className="mt-2 text-center text-sm text-gray-600">
+      <p className="mt-3 sm:mt-4 text-sm sm:text-base text-gray-600 max-w-md mx-auto leading-relaxed">
         {subtitle}
       </p>
     </div>
