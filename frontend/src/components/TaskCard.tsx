@@ -11,8 +11,8 @@ interface TaskCardProps {
 const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleComplete }) => {
   const getCategoryColor = (category: string): string => {
     switch (category) {
-      case 'Work': return '#DBEAFE';
-      case 'Personal': return '#D1FAE5';
+      case 'Work': return 'rgba(75, 123, 229, 0.1)'; // Light blue background using our standard blue
+      case 'Personal': return 'rgba(133, 210, 98, 0.1)'; // Light green background using our standard green
       case 'Other': return '#F3F4F6';
       default: return '#F3F4F6';
     }
@@ -20,8 +20,8 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, onEdit, onDelete, onToggleCom
 
   const getCategoryTextColor = (category: string): string => {
     switch (category) {
-      case 'Work': return '#1E40AF';
-      case 'Personal': return '#065F46';
+      case 'Work': return '#4B7BE5'; // Our standard blue color
+      case 'Personal': return '#85d262'; // Our standard green color
       case 'Other': return '#374151';
       default: return '#374151';
     }

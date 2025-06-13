@@ -187,8 +187,8 @@ const About: React.FC = () => {
               {
                 icon: (
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="#F59E0B" strokeWidth="2"/>
-                    <path d="M10 4V2C10 1.46957 10.2107 0.960859 10.5858 0.585786C10.9609 0.210714 11.4696 0 12 0C12.5304 0 13.0391 0.210714 13.4142 0.585786C13.7893 0.960859 14 1.46957 14 2V4" stroke="#F59E0B" strokeWidth="2"/>
+                    <rect x="2" y="4" width="20" height="16" rx="2" stroke="#d28562" strokeWidth="2"/>
+                    <path d="M10 4V2C10 1.46957 10.2107 0.960859 10.5858 0.585786C10.9609 0.210714 11.4696 0 12 0C12.5304 0 13.0391 0.210714 13.4142 0.585786C13.7893 0.960859 14 1.46957 14 2V4" stroke="#d28562" strokeWidth="2"/>
                   </svg>
                 ),
                 title: 'Responsive Design',
@@ -263,11 +263,11 @@ const About: React.FC = () => {
 
         {/* Technology Stack */}
         <div style={{
-          background: 'rgba(34, 197, 94, 0.05)',
+          background: 'rgba(133, 210, 98, 0.05)',
           borderRadius: '12px',
           padding: '24px',
           marginBottom: '32px',
-          border: '1px solid rgba(34, 197, 94, 0.15)'
+          border: '1px solid rgba(133, 210, 98, 0.15)'
         }}>
           <h3 style={{
             color: '#363942',
@@ -293,8 +293,8 @@ const About: React.FC = () => {
               <div
                 key={index}
                 style={{
-                  background: 'rgba(34, 197, 94, 0.1)',
-                  color: '#059669',
+                  background: 'rgba(133, 210, 98, 0.1)',
+                  color: '#85d262',
                   padding: '8px 12px',
                   borderRadius: '6px',
                   fontSize: '12px',
