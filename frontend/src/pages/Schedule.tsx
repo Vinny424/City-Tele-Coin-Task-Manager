@@ -9,6 +9,20 @@ const Schedule: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [expandedTaskId, setExpandedTaskId] = useState<number | null>(null);
+
+  const toggleTaskCompletion = async (taskId: number, completed: boolean) => {
+    try {
+      await taskService.updateTask(taskId, {
+        ...tasks.find(t => t.id === taskId)!,
+        completed: !completed
+      });
+      // Reload tasks to reflect the change
+      loadTasks();
+    } catch (error) {
+      console.error('Error toggling task completion:', error);
+    }
+  };
 
   useEffect(() => {
     loadTasks();
@@ -263,55 +277,240 @@ const Schedule: React.FC = () => {
             }}>
               {getTasksForDate(selectedDate)
                 .sort((a, b) => new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime())
-                .map((task) => (
-                <div
-                  key={task.id}
-                  style={{
-                    background: task.completed ? '#4B7BE5' : 'white',
-                    borderRadius: '8px',
-                    padding: '16px',
-                    boxShadow: '3px 3px 16px rgba(0, 0, 0, 0.08)',
-                    border: '1px solid #E5E7EB',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}
-                >
-                  <div>
-                    <div style={{
-                      color: task.completed ? '#F8F6FF' : '#363942',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      marginBottom: '4px',
-                      letterSpacing: '0.14px',
-                      textDecoration: task.completed ? 'line-through' : 'none'
-                    }}>
-                      {task.title}
-                    </div>
-                    {task.dueDate && (
+                .map((task) => {
+                  const isExpanded = expandedTaskId === task.id;
+                  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !task.completed;
+                  
+                  return (
+                    <div
+                      key={task.id}
+                      onClick={() => setExpandedTaskId(isExpanded ? null : task.id)}
+                      style={{
+                        background: task.completed 
+                          ? '#85d262' 
+                          : isOverdue 
+                            ? '#d28562' 
+                            : '#d28562',
+                        borderRadius: '12px',
+                        padding: isExpanded ? '20px' : '16px',
+                        boxShadow: isExpanded 
+                          ? '0 8px 32px rgba(0, 0, 0, 0.12)' 
+                          : '3px 3px 16px rgba(0, 0, 0, 0.08)',
+                        border: task.completed 
+                          ? '1px solid rgba(133, 210, 98, 0.3)'
+                          : '1px solid rgba(210, 133, 98, 0.3)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        transform: isExpanded ? 'scale(1.02)' : 'scale(1)',
+                        zIndex: isExpanded ? 10 : 1,
+                        position: 'relative'
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isExpanded) {
+                          e.currentTarget.style.transform = 'translateY(-2px)';
+                          e.currentTarget.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.12)';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isExpanded) {
+                          e.currentTarget.style.transform = 'translateY(0)';
+                          e.currentTarget.style.boxShadow = '3px 3px 16px rgba(0, 0, 0, 0.08)';
+                        }
+                      }}
+                    >
                       <div style={{
-                        color: task.completed ? '#F8F6FF' : '#363942',
-                        fontSize: '10px',
-                        fontWeight: '400',
-                        letterSpacing: '0.10px',
-                        opacity: task.completed ? 0.8 : 0.7
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        marginBottom: isExpanded && task.description ? '12px' : '0'
                       }}>
-                        {formatTime(task.dueDate)}
+                        <div style={{ flex: 1 }}>
+                          <div style={{
+                            color: '#F8F6FF',
+                            fontSize: isExpanded ? '16px' : '14px',
+                            fontWeight: '600',
+                            marginBottom: '4px',
+                            letterSpacing: '0.14px',
+                            textDecoration: task.completed ? 'line-through' : 'none',
+                            transition: 'all 0.3s ease'
+                          }}>
+                            {task.title}
+                          </div>
+                          {task.dueDate && (
+                            <div style={{
+                              color: 'rgba(248, 246, 255, 0.9)',
+                              fontSize: isExpanded ? '12px' : '10px',
+                              fontWeight: '400',
+                              letterSpacing: '0.10px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              transition: 'all 0.3s ease'
+                            }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
+                                <polyline points="12,6 12,12 16,14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              {formatTime(task.dueDate)}
+                              {isOverdue && (
+                                <span style={{ 
+                                  fontSize: '10px', 
+                                  fontWeight: '600',
+                                  background: 'rgba(255, 255, 255, 0.2)',
+                                  padding: '2px 6px',
+                                  borderRadius: '4px'
+                                }}>
+                                  OVERDUE
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px'
+                        }}>
+                          <div style={{
+                            background: 'rgba(248, 246, 255, 0.2)',
+                            color: '#F8F6FF',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                            fontSize: '10px',
+                            fontWeight: '500',
+                            whiteSpace: 'nowrap'
+                          }}>
+                            {task.category}
+                          </div>
+                          
+                          <div style={{
+                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.3s ease'
+                          }}>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                              <polyline points="6,9 12,15 18,9" stroke="#F8F6FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                  <div style={{
-                    background: task.completed ? 'rgba(248, 246, 255, 0.2)' : `rgba(${task.category === 'Work' ? '75, 123, 229' : task.category === 'Personal' ? '34, 197, 94' : '156, 163, 175'}, 0.1)`,
-                    color: task.completed ? '#F8F6FF' : '#363942',
-                    padding: '4px 8px',
-                    borderRadius: '4px',
-                    fontSize: '10px',
-                    fontWeight: '500'
-                  }}>
-                    {task.category}
-                  </div>
-                </div>
-              ))}
+                      
+                      {isExpanded && (
+                        <div style={{
+                          borderTop: '1px solid rgba(248, 246, 255, 0.2)',
+                          paddingTop: '12px',
+                          animation: 'expandIn 0.3s ease-out'
+                        }}>
+                          {task.description ? (
+                            <div>
+                              <h4 style={{
+                                color: '#F8F6FF',
+                                fontSize: '12px',
+                                fontWeight: '600',
+                                margin: '0 0 6px 0',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.5px'
+                              }}>
+                                Description
+                              </h4>
+                              <p style={{
+                                color: 'rgba(248, 246, 255, 0.9)',
+                                fontSize: '14px',
+                                lineHeight: '1.5',
+                                margin: '0 0 12px 0'
+                              }}>
+                                {task.description}
+                              </p>
+                            </div>
+                          ) : (
+                            <p style={{
+                              color: 'rgba(248, 246, 255, 0.7)',
+                              fontSize: '12px',
+                              fontStyle: 'italic',
+                              margin: '0 0 12px 0'
+                            }}>
+                              No description provided
+                            </p>
+                          )}
+                          
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: '12px'
+                          }}>
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              fontSize: '11px',
+                              color: 'rgba(248, 246, 255, 0.8)'
+                            }}>
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                                <path d="M20 6L9 17L4 12" stroke={task.completed ? 'currentColor' : '#9CA3AF'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                              {task.completed ? 'Completed' : 'Pending'}
+                            </div>
+                            
+                            <div style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '12px'
+                            }}>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleTaskCompletion(task.id, task.completed);
+                                }}
+                                style={{
+                                  background: task.completed 
+                                    ? '#d28562' 
+                                    : '#85d262',
+                                  color: '#fff',
+                                  border: 'none',
+                                  borderRadius: '6px',
+                                  padding: '6px 12px',
+                                  fontSize: '10px',
+                                  fontWeight: '600',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.2s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  fontFamily: 'Poppins, sans-serif'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(-1px)';
+                                  e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.transform = 'translateY(0)';
+                                  e.currentTarget.style.boxShadow = 'none';
+                                }}
+                              >
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
+                                  {task.completed ? (
+                                    <path d="M9 11H15M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  ) : (
+                                    <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                  )}
+                                </svg>
+                                {task.completed ? 'Mark Incomplete' : 'Mark Complete'}
+                              </button>
+                              
+                              <div style={{
+                                fontSize: '10px',
+                                color: 'rgba(248, 246, 255, 0.7)'
+                              }}>
+                                Created: {new Date(task.createdAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
           )}
         </div>
@@ -390,6 +589,24 @@ const Schedule: React.FC = () => {
           About
         </Link>
       </div>
+
+      {/* Add CSS for animations */}
+      <style>
+        {`
+          @keyframes expandIn {
+            0% { 
+              opacity: 0; 
+              transform: translateY(-10px); 
+              maxHeight: 0;
+            }
+            100% { 
+              opacity: 1; 
+              transform: translateY(0); 
+              maxHeight: 200px;
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };
